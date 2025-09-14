@@ -1,9 +1,0 @@
-{
-  "manifest_version": 3,
-  "name": "Clip Link",
-  "version": "1.0.0",
-  "action": {
-     "default_popup": "/popup/index.html"
-  }
-}
-      
