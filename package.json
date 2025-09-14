@@ -1,15 +1,17 @@
 {
   "name": "clip-link",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:watch": "vite build --watch",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/node": "^24.4.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
