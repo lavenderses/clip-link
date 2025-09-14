@@ -36,14 +36,7 @@ function App() {
 
   const copyTitleAndLink = async () => {
     try {
-      const tabs = await new Promise<chrome.tabs.Tab[]>((resolve) =>
-        chrome.tabs.query({ active: true, currentWindow: true }, resolve)
-      );
-  
-      const tab = tabs[0];
-      if (!tab) return;
-  
-      const linktext = `${tab.title} - ${tab.url}`;
+      const linktext = `${document.title} - ${window.location.href}`;
       console.log(linktext);
   
       await copyToClipboard(linktext);
