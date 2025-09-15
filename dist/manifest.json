@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Clip Clink",
+  "version": "1.0.0",
+  "permissions": [
+    "tabs"
+  ],
+  "commands": {
+    "openPopup": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L"
+      },
+      "description": "Open popup link"
+    }
+  },
+  "background": {
+    "service_worker": "/background/openPopup.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "/index.html"
+  }
+}
