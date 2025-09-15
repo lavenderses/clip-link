@@ -1,13 +1,18 @@
-import { useEffect, useRef } from 'react'
-import { Box, List, ListItemText } from '@mui/material';
+import { useEffect, useRef, useState } from 'react'
+import { Alert, Box, List, ListItemText, Snackbar } from '@mui/material';
 import ClipLinkListItemButton from './component/ClipLinkListItemButton';
 import { options } from './const/options';
 import { copyTitleAndLink } from './utils/link';
 import ContextSupplier from './utils/ContextSupplier';
+import { getCopiedMessage } from './utils/message';
+
+const closeMilliSec = 2_000
 
 function App() {
   const contextSupplier = new ContextSupplier()
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
     const currentIndex = itemRefs.current.findIndex(
@@ -26,6 +31,10 @@ function App() {
       itemRefs.current[prevIndex]?.focus();
     }
   };
+
+  const handleClose: () => void = () => {
+    setOpen(false);
+  }
 
   // 初期フォーカス
   useEffect(() => {
@@ -60,7 +69,19 @@ function App() {
               ref={(el) => {
                 itemRefs.current[i] = el;
               }}
-              onClick={() => copyTitleAndLink(contextSupplier, option.type)}
+              onClick={async () => {
+                await copyTitleAndLink(contextSupplier, option.type)
+                setOpen(true)
+                setMessage(getCopiedMessage(option.type))
+
+                // close window if chrome extension,
+                setTimeout(async () => {
+                  await contextSupplier.byContext(
+                      async () => window.close(),
+                      async () => {},
+                  )
+                }, closeMilliSec);
+              }}
               sx={{
                 mt: 1,
                 borderRadius: 2,
@@ -71,6 +92,20 @@ function App() {
           ))}
         </List>
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={closeMilliSec}
+        onClose={handleClose}
+        message={message}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >{message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

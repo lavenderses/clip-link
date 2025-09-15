@@ -49,12 +49,6 @@ export const copyTitleAndLink = async (contextSupplier: ContextSupplier, clipOpt
     console.log(linktext);
 
     await copyToClipboard(linktext);
-
-    // close window if chrome extension,
-    contextSupplier.byContext(
-        async () => window.close(),
-        async () => {},
-    )
   } catch (err) {
     console.error(err);
   }
