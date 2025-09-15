@@ -35,16 +35,22 @@ function App() {
 
   const copyTitleAndLink = async (clipOption: ClipOption) => {
     try {
+      const tabs = await new Promise<chrome.tabs.Tab[]>((resolve) =>
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve)
+      );
+  
+      const tab = tabs[0];
+      if (!tab) return;
       let linktext;
       switch (clipOption) {
         case ClipOption.PLAIN_TEXT:
-          linktext = `${document.title} ${window.location.href}`;
+          linktext = `${tab.title} ${tab.url}`;
           break
         case ClipOption.MARKDOWN:
-          linktext = `[${document.title}](${window.location.href})`;
+          linktext = `[${tab.title}](${tab.url})`;
           break
         case ClipOption.TEXT_ONLY:
-          linktext = `${document.title}`;
+          linktext = `${tab.title}`;
           break
       }
       console.log(linktext);
