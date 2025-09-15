@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { Box, List, ListItemText } from '@mui/material';
 import ClipLinkListItemButton from './component/ClipLinkListItemButton';
-import { ClipOption, options } from './const/options';
+import { options } from './const/options';
+import { copyTitleAndLink } from './utils/link';
+import ContextSupplier from './utils/ContextSupplier';
 
 function App() {
+  const contextSupplier = new ContextSupplier()
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
@@ -21,44 +24,6 @@ function App() {
       e.preventDefault();
       const prevIndex = (currentIndex - 1 + options.length) % options.length;
       itemRefs.current[prevIndex]?.focus();
-    }
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      console.log("Copied:", text);
-    } catch (err) {
-      console.error("コピーに失敗しました:", err);
-    }
-  };
-
-  const copyTitleAndLink = async (clipOption: ClipOption) => {
-    try {
-      const tabs = await new Promise<chrome.tabs.Tab[]>((resolve) =>
-        chrome.tabs.query({ active: true, currentWindow: true }, resolve)
-      );
-  
-      const tab = tabs[0];
-      if (!tab) return;
-      let linktext;
-      switch (clipOption) {
-        case ClipOption.PLAIN_TEXT:
-          linktext = `${tab.title} ${tab.url}`;
-          break
-        case ClipOption.MARKDOWN:
-          linktext = `[${tab.title}](${tab.url})`;
-          break
-        case ClipOption.TEXT_ONLY:
-          linktext = `${tab.title}`;
-          break
-      }
-      console.log(linktext);
-  
-      await copyToClipboard(linktext);
-      window.close();
-    } catch (err) {
-      console.error(err);
     }
   };
 
@@ -95,7 +60,7 @@ function App() {
               ref={(el) => {
                 itemRefs.current[i] = el;
               }}
-              onClick={() => copyTitleAndLink(option.type)}
+              onClick={() => copyTitleAndLink(contextSupplier, option.type)}
               sx={{
                 mt: 1,
                 borderRadius: 2,
