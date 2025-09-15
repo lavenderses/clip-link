@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
-import './App.css'
-import { List, ListItemButton, ListItemText } from '@mui/material';
-
-const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
+import { Box, List, ListItemText } from '@mui/material';
+import ClipLinkListItemButton from './component/ClipLinkListItemButton';
+import { ClipOption, options } from './const/options';
 
 function App() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -34,9 +33,20 @@ function App() {
     }
   };
 
-  const copyTitleAndLink = async () => {
+  const copyTitleAndLink = async (clipOption: ClipOption) => {
     try {
-      const linktext = `${document.title} - ${window.location.href}`;
+      let linktext;
+      switch (clipOption) {
+        case ClipOption.PLAIN_TEXT:
+          linktext = `${document.title} ${window.location.href}`;
+          break
+        case ClipOption.MARKDOWN:
+          linktext = `[${document.title}](${window.location.href})`;
+          break
+        case ClipOption.TEXT_ONLY:
+          linktext = `${document.title}`;
+          break
+      }
       console.log(linktext);
   
       await copyToClipboard(linktext);
@@ -51,24 +61,45 @@ function App() {
   }, []);
 
   return (
-    <List
-      onKeyDown={handleKeyDown}
-      sx={{ width: "200px", bgcolor: "background.paper" }}
-      tabIndex={0}
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      {options.map((text, i) => (
-        <ListItemButton
-          component="div"
-          key={i}
-          ref={(el) => {
-            itemRefs.current[i] = el;
-          }}
-          onClick={() => copyTitleAndLink()}
+      <Box
+        sx={{
+          width: 200,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <List
+          onKeyDown={handleKeyDown}
+          sx={{ bgcolor: "background.paper" }}
+          tabIndex={0}
         >
-          <ListItemText primary={text} />
-        </ListItemButton>
-      ))}
-    </List>
+          {options.map((option, i) => (
+            <ClipLinkListItemButton
+              key={i}
+              ref={(el) => {
+                itemRefs.current[i] = el;
+              }}
+              onClick={() => copyTitleAndLink(option.type)}
+              sx={{
+                mt: 1,
+                borderRadius: 2,
+              }}
+            >
+              <ListItemText primary={option.displayText} />
+            </ClipLinkListItemButton>
+          ))}
+        </List>
+      </Box>
+    </Box>
   );
 }
 
