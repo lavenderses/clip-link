@@ -56,6 +56,7 @@ function App() {
       console.log(linktext);
   
       await copyToClipboard(linktext);
+      window.close();
     } catch (err) {
       console.error(err);
     }
