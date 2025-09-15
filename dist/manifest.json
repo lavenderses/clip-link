@@ -8,7 +8,8 @@
   "commands": {
     "openPopup": {
       "suggested_key": {
-        "default": "Ctrl+Shift+L"
+        "default": "Ctrl+Shift+L",
+        "mac": "MacCtrl+Shift+L"
       },
       "description": "Open popup link"
     }
